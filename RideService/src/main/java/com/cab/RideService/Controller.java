@@ -37,8 +37,8 @@ public class Controller {
 
     @RequestMapping("/inputfile")
     public String inputFile() throws IOException {
-        FileReader file = new FileReader("/home/prateekshyap/Documents/inputfile");
-        List<String> lines = Files.readAllLines(Paths.get("/home/prateekshyap/Documents/inputfile"));
+        FileReader file = new FileReader("/home/tarun/inputfile");
+        List<String> lines = Files.readAllLines(Paths.get("/home/tarun/inputfile"));
         int i=-1;
 
         for (String line : lines){
@@ -242,66 +242,28 @@ public class Controller {
 
                 String deductionUri = walletUri + "/deductAmount?custId=" + custId + "&amount=" + amount;
                 Boolean flag = restTemplate.getForObject(deductionUri,Boolean.class);
-
-                // if sufficient amount of money available
+                //boolean flag = true;
                 if(flag){
                     uri = cabUri + "/rideStarted?cabId=" + cab.cabId + "&rideId=" +  ride.rideId;
                     Boolean isRideStarted =  restTemplate.getForObject(uri, Boolean.class);
-
                     //Boolean isRideStarted=true;
-
-                    // ride didn't started
-                    if(!isRideStarted){
-                        System.out.println("Possibly because of wrong cabId and rideId");
-                        return -1;
-                    }
-                    ride.setRideStatus("on-going");
-                    ride.setCab(cab);
-                    cab.setRideId(ride.rideId);
-                    cab.setCabStatus("giving-ride");
-                    rsf.updateRideService(ride);
-                    csf.updateCab(cab);
-                    return ride.rideId;
-
-                }
-<<<<<<< HEAD
-		else
-		{
-	        	String cancelUri = cabUri+"/rideCanceled?cabId="+cab.cabId+"&rideId="+ride.rideId;
-	        	Boolean isRideCanceled = restTemplate.getForObject(cancelUri,Boolean.class);
-	        	if (isRideCanceled)
-	        	{
-				ride.setRideStatus("cancelled");
-				ride.setCab(cab);
-				cab.setCabStatus("available");
-				cab.setRideId(ride.rideId);
-				csf.updateCab(cab);
-				rsf.updateRideService(ride);
-	        		return -1;
-	        	}
-		}
-=======
-                else{
-
-                    cab.setCabStatus("available");
-                    cab.setRideId(ride.rideId);
-                    csf.updateCab(cab);
-                    ride.setRideStatus("cancelled");
-                    ride.setCab(cab);
-                    rsf.updateRideService(ride);
-                    System.out.println("Wallet doesn't have sufficient money ");
-
+                    if(isRideStarted)
+                        ride.setRideStatus("on-going");
+                        ride.setCab(cab);
+                        cab.setRideId(ride.rideId);
+                        cab.setCabStatus("giving-ride");
+                        rsf.updateRideService(ride);
+                        csf.updateCab(cab);
+                        return ride.rideId;
 
                 }
 
->>>>>>> 2ac4f4f07148f713fa4ed0659fcd30a4b0006719
 
             }
 
         }
         ride.setRideStatus("cancelled");
         rsf.updateRideService(ride);
-        //String cancelUri = cabUri+"/rideCanceled?cabId="+cab.cabId
 
         return -1;
     }
@@ -317,7 +279,7 @@ public class Controller {
             return "Not a valid Cab Id";
         }
         else if(cab.get().cabStatus.contentEquals("signed-out")){
-            return cab.get().cabStatus+" -1";
+            return "-1";
         }
         else if(cab.get().cabStatus.contentEquals("giving-ride")){
 
@@ -325,11 +287,11 @@ public class Controller {
             RideService ride = rideService.get();
             //return "Cabid" + cab.get().cabId + " CabStatus:" + cab.get().cabStatus + "LastKnownPosition:" + ride.getSourceLoc() +
             // " Customer-ID:" + ride.getCustId() + " Destination:" + ride.getDestLoc();
-            return cab.get().cabStatus + " " + ride.getSourceLoc() +
+            return cab.get().cabId + " " + cab.get().cabStatus + " " + ride.getSourceLoc() +
              " " + ride.getCustId() + " " + ride.getDestLoc();
         }
         else{
-            return cab.get().cabStatus + " " + cab.get().cabCurrentLocation;
+            return cab.get().cabId + " " + cab.get().cabStatus + " " + cab.get().cabCurrentLocation;
         }
     }
 
@@ -345,15 +307,8 @@ public class Controller {
 
             if(cab.cabStatus.contentEquals("giving-ride")){
 
-                // End ride
                 String uri = cabUri + "/rideEnded?cabId=" + cab.cabId + "&rideId=" + cab.rideId;
                 Boolean result = restTemplate.getForObject(uri, Boolean.class);
-                if(!result){
-                    throw new RuntimeException("Should not reach here");
-                }
-
-                uri = cabUri + "/signOut?cabId=" + cab.cabId;
-                result = restTemplate.getForObject(uri, Boolean.class);
                 if(!result){
                     throw new RuntimeException("Should not reach here");
                 }

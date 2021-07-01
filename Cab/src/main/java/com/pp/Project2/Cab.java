@@ -25,8 +25,8 @@ public class Cab {
 
     @RequestMapping("/inputfile")
     public String inputFile() throws IOException {
-        FileReader file = new FileReader("/home/prateekshyap/Documents/inputfile");
-        List<String> lines = Files.readAllLines(Paths.get("/home/prateekshyap/Documents/inputfile"));
+        FileReader file = new FileReader("/home/tarun/inputfile");
+        List<String> lines = Files.readAllLines(Paths.get("/home/tarun/inputfile"));
         int i=-1;
 
         for (String line : lines){
@@ -184,10 +184,7 @@ public class Cab {
                 return false;
             cab.setCurrentState("available"); //set state
             cab.setTotalRides(0); //set total number of rides to 0
-            cab.setInterestStatus("Yes"); //set default interest status
             cab.setCurrentPos(initialPos); //set initial position as current position
-            cab.setRideId(0); //set ride id
-            cab.setInterestStatus("Yes");
             cabManager.cabRepository.save(cab);
             return true;
         }

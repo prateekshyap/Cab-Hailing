@@ -22,8 +22,8 @@ public class Wallet {
 
     @RequestMapping("/inputfile")
     public String inputFile() throws IOException {
-        FileReader file = new FileReader("/var/inputfile.txt");
-        List<String> lines = Files.readAllLines(Paths.get("/var/inputfile.txt"));
+        FileReader file = new FileReader("/home/tarun/inputfile");
+        List<String> lines = Files.readAllLines(Paths.get("/home/tarun/inputfile"));
         int i=-1;
         ArrayList<Integer> customerList =  new ArrayList<>();
         Integer initialWalletBalance = -1;
@@ -103,34 +103,16 @@ public class Wallet {
     @RequestMapping("/reset")
     public void reset() throws IOException {
         //set the balance to initial balance for all the customers
-        FileReader file = new FileReader("/var/inputfile.txt");
-        List<String> lines = Files.readAllLines(Paths.get("/var/inputfile.txt"));
-        //FileReader file = new FileReader("/home/tarun/inputfile");
-        //List<String> lines = Files.readAllLines(Paths.get("/home/tarun/inputfile"));
-        ArrayList<Integer> customerList =  new ArrayList<>();
-        Integer initialWalletBalance = -1;
+        FileReader file = new FileReader("/home/tarun/inputfile");
+        List<String> lines = Files.readAllLines(Paths.get("/home/tarun/inputfile"));
         int i=-1;
+        int resetBalance = 0;
         for (String line : lines){
             if(line.contentEquals("****")) {
                 i = i + 1;
-                continue;
             }
-
-            if(i == 0){
-                // add cabs
-
-
-            }
-            else if(i == 1){
-                // add customer
-                WalletEntity w = new WalletEntity(1,2);
-                customerList.add(Integer.parseInt(line));
-            }
-            else{
-                // add wallet
-                initialWalletBalance = Integer.parseInt(line);
-            }
-
+            else if (i == 2)
+                resetBalance = Integer.parseInt(line);
         }
         i = 1;
         while (true)
@@ -138,15 +120,7 @@ public class Wallet {
             WalletEntity wallet = walletManager.getWalletById(i++);
             if (wallet == null)
                 break;
-            wallet.setBalance(initialWalletBalance);
-        for(Integer custId : customerList ){
-            wallet = walletManager.getWalletById(custId);
-            wallet.setBalance(initialWalletBalance);
-            walletManager.walletRepository.save(wallet);
+            wallet.setBalance(resetBalance);
         }
-
-
-
     }
-}
 }
